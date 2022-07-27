@@ -129,7 +129,6 @@ import pandas as pd
 def all_pages():
     movies_dict={
         'title':[],
-        'duration':[],
         'rating':[],
         'year':[],
     }
