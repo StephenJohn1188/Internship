@@ -1,0 +1,477 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 95,
+   "id": "e5fafefe",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: bs4 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (0.0.1)\n",
+      "Requirement already satisfied: beautifulsoup4 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from bs4) (4.11.1)\n",
+      "Requirement already satisfied: soupsieve>1.2 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from beautifulsoup4->bs4) (2.3.1)\n",
+      "Requirement already satisfied: requests in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (2.27.1)\n",
+      "Requirement already satisfied: urllib3<1.27,>=1.21.1 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from requests) (1.26.9)\n",
+      "Requirement already satisfied: idna<4,>=2.5 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from requests) (3.3)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from requests) (2021.10.8)\n",
+      "Requirement already satisfied: charset-normalizer~=2.0.0 in c:\\users\\stephen john\\anaconda3\\lib\\site-packages (from requests) (2.0.4)\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install bs4\n",
+    "!pip install requests"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "id": "2b695422",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import requests"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 110,
+   "id": "74233a31",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "topics=requests.get(\"https://www.imdb.com/list/ls056092300/\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 111,
+   "id": "ff6f0f7a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "content=topics.text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 112,
+   "id": "b08943ad",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'\\n\\n\\n<!DOCTYPE html>\\n<html\\n    xmlns:og=\"http://ogp.me/ns#\"\\n    xmlns:fb=\"http://www.facebook.com/2008/fbml\">\\n    <head>\\n         \\n\\n        <meta charset=\"utf-8\">\\n\\n\\n\\n\\n        <script type=\"text/javascript\">var IMDbTimer={starttime: new Date().getTime(),pt:\\'java\\'};</script>\\n\\n<script>\\n    if (typeof uet == \\'function\\') {\\n      uet(\"bb\", \"LoadTitle\", {wb: 1});\\n    }\\n</script>\\n  <script>(function(t){ (t.events = t.events || {})[\"csm_head_pre_title\"] = new Date().getTime(); })(IMDbTimer);</script>\\n     '"
+      ]
+     },
+     "execution_count": 112,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "content[:500]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 113,
+   "id": "06cfb1b1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from bs4 import BeautifulSoup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 114,
+   "id": "641da599",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "doc = BeautifulSoup(topics.text,'html.parser')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 115,
+   "id": "d85069f1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<title>100 Best Indian Films Till Date - IMDb</title>"
+      ]
+     },
+     "execution_count": 115,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "doc.find('title')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 116,
+   "id": "dc3e3226",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_movie_titles(doc):\n",
+    "    \n",
+    "    selection_class=\"lister-item-header\"\n",
+    "    movie_title_tags=doc.find_all('h3',{'class':selection_class})\n",
+    "    movie_titles=[]\n",
+    "\n",
+    "    for tag in movie_title_tags:\n",
+    "        title = tag.find('a').text\n",
+    "        movie_titles.append(title)\n",
+    "        \n",
+    "        \n",
+    "    return movie_titles"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "id": "0cc8cdbc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "titles = get_movie_titles(doc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 146,
+   "id": "de7cf755",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Ship of Theseus',\n",
+       " 'Iruvar',\n",
+       " 'Kaagaz Ke Phool',\n",
+       " 'Lagaan: Once Upon a Time in India',\n",
+       " 'Pather Panchali']"
+      ]
+     },
+     "execution_count": 146,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "titles[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 147,
+   "id": "d2043cf1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_movie_rating(doc):\n",
+    "    rating_selector=\"ipl-rating-star small\"          \n",
+    "    movie_rating_tags=doc.find_all('div',{'class':rating_selector})\n",
+    "    movie_rating_tagss=[]\n",
+    "    for tag in movie_rating_tags:\n",
+    "        movie_rating_tagss.append(tag.get_text().strip())\n",
+    "    return movie_rating_tagss"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 148,
+   "id": "2dd69985",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['8', '8.4', '7.8', '8.1', '8.3']"
+      ]
+     },
+     "execution_count": 148,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ratings = get_movie_rating(doc)\n",
+    "ratings[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 149,
+   "id": "d37d55e4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_movie_year(doc):\n",
+    "    year_selector = \"lister-item-year text-muted unbold\"           \n",
+    "    movie_year_tags=doc.find_all('span',{'class':year_selector})\n",
+    "    movie_year_tagss=[]\n",
+    "    for tag in movie_year_tags:\n",
+    "        movie_year_tagss.append(tag.get_text().strip()[1:5])\n",
+    "    return movie_year_tagss"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 150,
+   "id": "7c58f04b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['2012', '1997', '1959', '2001', '1955']"
+      ]
+     },
+     "execution_count": 150,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "years = get_movie_year(doc)\n",
+    "years[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 151,
+   "id": "2a16d294",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 152,
+   "id": "84aa13d7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def all_pages():\n",
+    "    movies_dict={\n",
+    "        'title':[],\n",
+    "        'rating':[],\n",
+    "        'year':[],\n",
+    "    }\n",
+    "  # We have to scrap more than one page so we want urls of all pages with the help of loop we can get all urls\n",
+    "    for i in range(1,2000,100):\n",
+    "       \n",
+    "        try:\n",
+    "            url = 'https://www.imdb.com/search/title/?groups=top_100&sort=user_rating,desc&count=100&start='+str(i)+'&ref_=adv_next'\n",
+    "            response = requests.get(url)\n",
+    "        except:\n",
+    "            break\n",
+    "        \n",
+    "        if response.status_code != 200:\n",
+    "            break\n",
+    "\n",
+    "        doc = BeautifulSoup(response.text, 'html.parser')\n",
+    "        titles = get_movie_titles(doc)\n",
+    "        ratings = get_movie_rating(doc)\n",
+    "        years = get_movie_year(doc)\n",
+    "        \n",
+    "\n",
+    "        for i in range(len(titles)):\n",
+    "            movies_dict['title'].append(titles[i])\n",
+    "            movies_dict['rating'].append(ratings[i])\n",
+    "            movies_dict['year'].append(years[i])\n",
+    "        \n",
+    "    return pd.DataFrame(movies_dict)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 153,
+   "id": "958503ac",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "movies_dict={\n",
+    "    'title':titles,\n",
+    "    'rating':ratings,\n",
+    "    'year':years,\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 154,
+   "id": "7e3f867b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>title</th>\n",
+       "      <th>rating</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Ship of Theseus</td>\n",
+       "      <td>8</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Iruvar</td>\n",
+       "      <td>8.4</td>\n",
+       "      <td>1997</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Kaagaz Ke Phool</td>\n",
+       "      <td>7.8</td>\n",
+       "      <td>1959</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Lagaan: Once Upon a Time in India</td>\n",
+       "      <td>8.1</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Pather Panchali</td>\n",
+       "      <td>8.3</td>\n",
+       "      <td>1955</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>95</th>\n",
+       "      <td>Apur Sansar</td>\n",
+       "      <td>8.5</td>\n",
+       "      <td>1959</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>96</th>\n",
+       "      <td>Kanchivaram</td>\n",
+       "      <td>8.1</td>\n",
+       "      <td>2008</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>97</th>\n",
+       "      <td>Monsoon Wedding</td>\n",
+       "      <td>7.3</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>98</th>\n",
+       "      <td>Black</td>\n",
+       "      <td>8.1</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>99</th>\n",
+       "      <td>Deewaar</td>\n",
+       "      <td>8</td>\n",
+       "      <td>1975</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>100 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                title rating  year\n",
+       "0                     Ship of Theseus      8  2012\n",
+       "1                              Iruvar    8.4  1997\n",
+       "2                     Kaagaz Ke Phool    7.8  1959\n",
+       "3   Lagaan: Once Upon a Time in India    8.1  2001\n",
+       "4                     Pather Panchali    8.3  1955\n",
+       "..                                ...    ...   ...\n",
+       "95                        Apur Sansar    8.5  1959\n",
+       "96                        Kanchivaram    8.1  2008\n",
+       "97                    Monsoon Wedding    7.3  2001\n",
+       "98                              Black    8.1  2005\n",
+       "99                            Deewaar      8  1975\n",
+       "\n",
+       "[100 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 154,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.DataFrame(movies_dict)\n",
+    "df\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c3e3e0de",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
