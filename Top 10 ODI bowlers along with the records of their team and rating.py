@@ -77,7 +77,7 @@ Team
 # In[125]:
 
 
-Rating=country.find('td','table-body__cell rating')
+Rating=country.find('td',class_='table-body__cell rating')
 Rating
 
 
@@ -91,7 +91,7 @@ Rating.text
 
 
 Rating=[]
-for i in country.find_all('td','table-body__cell rating'):
+for i in country.find_all('td',class_='table-body__cell rating'):
   Rating.append(i.text)
 Rating
 
